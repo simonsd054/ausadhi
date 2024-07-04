@@ -1,33 +1,100 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useReducer } from "react"
+import { Outlet } from "react-router"
+import { createBrowserRouter, RouterProvider } from "react-router-dom"
+import axios from "axios"
+
+import NavBar from "./components/NavBar"
+import { Login } from "./pages/"
+import { GlobalContext, globalReducer } from "./utils/reducer.js"
+
+axios.defaults.baseURL = import.meta.env.VITE_API_ENDPOINT // the url of our backend API
+
+//If we intercept requst, it changes the request object before we hit the API
+axios.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token")
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`
+  }
+  return config
+})
+
+const initialState = {
+  token: localStorage.getItem("token") ?? "",
+  user: localStorage.getItem("user")
+    ? JSON.parse(localStorage.getItem("user") as string)
+    : {},
+}
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <MainPage />,
+    // errorElement: <ErrorPage />,
+    children: [
+      {
+        path: "/auth",
+        // element: <ForwardToHome />,
+        children: [
+          // {
+          //   path: "register",
+          //   element: <Register />,
+          // },
+          {
+            path: "login",
+            element: <Login />,
+          },
+        ],
+      },
+      // {
+      //   path: "/",
+      //   element: <ProtectedRoute />,
+      //   children: [
+      //     {
+      //       path: "/ideas/create",
+      //       element: <CreateIdeaPage />,
+      //     },
+      //     {
+      //       path: "/ideas/:id/edit",
+      //       element: <EditIdeaPage />,
+      //     },
+      //     {
+      //       path: "/ideas/:id",
+      //       element: <IdeaDetailPage />,
+      //     },
+      //     {
+      //       path: "/my-ideas",
+      //       element: <MyIdeasPage />,
+      //     },
+      //     {
+      //       path: "/",
+      //       element: <HomePage />,
+      //     },
+      //   ],
+      // },
+    ],
+  },
+])
+
+function MainPage() {
+  return (
+    <div className="mb-10">
+      <header className="mb-[84px]">
+        <NavBar />
+      </header>
+      <main>
+        <Outlet />
+      </main>
+    </div>
+  )
+}
 
 function App() {
-  const [count, setCount] = useState(0)
-
+  const [store, dispatch] = useReducer(globalReducer, initialState)
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <GlobalContext.Provider value={{ store, dispatch }}>
+        <RouterProvider router={router} />
+      </GlobalContext.Provider>
     </>
   )
 }

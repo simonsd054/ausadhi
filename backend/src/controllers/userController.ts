@@ -16,7 +16,14 @@ const registerUser = async (req: Request, res: Response) => {
     id: userCreated._id,
   }
   const token = jwt.sign(payload, process.env.JWT_SECRET as string)
-  return res.json({ token })
+  return res.json({
+    token,
+    user: {
+      name: userCreated.name,
+      email: userCreated.email,
+      id: userCreated._id,
+    },
+  })
 }
 
 const loginUser = async (req: Request, res: Response) => {
@@ -33,7 +40,14 @@ const loginUser = async (req: Request, res: Response) => {
     id: existingUser._id,
   }
   const token = jwt.sign(payload, process.env.JWT_SECRET as string)
-  return res.json({ token })
+  return res.json({
+    token,
+    user: {
+      name: existingUser.name,
+      email: existingUser.email,
+      id: existingUser._id,
+    },
+  })
 }
 
 export { registerUser, loginUser }
