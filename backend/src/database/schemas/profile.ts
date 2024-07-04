@@ -19,20 +19,34 @@ interface IMedication {
   dosage?: number
 }
 
+type THydratedMedicationDocument = HydratedDocument<
+  IMedication & SchemaTimestampsConfig,
+  { medications?: Types.DocumentArray<IMedication & SchemaTimestampsConfig> }
+>
+
+type MedicationModelType = Model<
+  IMedication,
+  {},
+  {},
+  {},
+  THydratedMedicationDocument
+>
+
 interface IProfile {
   name: string
   relation?: string
-  medication?: IMedication[]
+  userId: Schema.Types.ObjectId
+  medications?: IMedication[]
 }
 
 type THydratedProfileDocument = HydratedDocument<
   IProfile & SchemaTimestampsConfig,
-  { medication?: Types.DocumentArray<IMedication & SchemaTimestampsConfig> }
+  { medications?: Types.DocumentArray<IMedication & SchemaTimestampsConfig> }
 >
 
 type ProfileModelType = Model<IProfile, {}, {}, {}, THydratedProfileDocument>
 
-const medicationSchema = new Schema<IMedication>(
+const medicationSchema = new Schema<IMedication, MedicationModelType>(
   {
     name: {
       type: String,
@@ -65,13 +79,26 @@ const profileSchema = new Schema<IProfile, ProfileModelType>(
       },
     },
     relation: String,
-    medication: [medicationSchema],
+    userId: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    medications: [medicationSchema],
   },
   {
     timestamps: true,
   }
 )
 
+const MedicationModel = model<IMedication, MedicationModelType>(
+  "Medication",
+  medicationSchema
+)
+
 const ProfileModel = model<IProfile, ProfileModelType>("Profile", profileSchema)
 
+
 export default ProfileModel
+
+export { IProfile, IMedication, MedicationModel }

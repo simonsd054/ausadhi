@@ -8,12 +8,11 @@ import {
 
 import checkUnique from "../utils/checkUnique"
 
-export interface IUser {
+interface IUser {
   name: string
   email: string
   emailVerifiedAt?: Date
   password: string
-  profiles?: Schema.Types.ObjectId[]
 }
 
 type THydratedUserDocument = HydratedDocument<IUser & SchemaTimestampsConfig>
@@ -41,12 +40,6 @@ const userSchema = new Schema<IUser, UserModelType>(
       type: String,
       required: true,
     },
-    profiles: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "Profile",
-      },
-    ],
   },
   {
     timestamps: true,
@@ -56,3 +49,5 @@ const userSchema = new Schema<IUser, UserModelType>(
 const UserModel = model<IUser, UserModelType>("User", userSchema)
 
 export default UserModel
+
+export { IUser }

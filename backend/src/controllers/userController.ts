@@ -3,6 +3,7 @@ import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 
 import UserModel, { IUser } from "../database/schemas/user"
+import CustomError from "../utils/customError"
 
 const registerUser = async (req: Request, res: Response) => {
   const user: IUser = req.body
@@ -20,23 +21,18 @@ const registerUser = async (req: Request, res: Response) => {
 
 const loginUser = async (req: Request, res: Response) => {
   const user: IUser = req.body
-  //check if username exists
   const existingUser = await UserModel.findOne({ email: user.email })
   if (!existingUser) {
-    return res.status(401).json({ error: "username or password is incorrect" })
+    throw new CustomError("User with that email does not exist", 401)
   }
-  //match the password
   const isMatch = await bcrypt.compare(user.password, existingUser.password)
   if (!isMatch) {
-    return res.status(401).json({ error: "username or password is incorrect" })
+    throw new CustomError("Password is incorrect", 401)
   }
-  //create the token
   const payload = {
     id: existingUser._id,
-    // is_admin: undefined which translates to false
   }
   const token = jwt.sign(payload, process.env.JWT_SECRET as string)
-  //return the token
   return res.json({ token })
 }
 
