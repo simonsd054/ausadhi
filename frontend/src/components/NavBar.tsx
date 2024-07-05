@@ -2,29 +2,56 @@ import { Navbar } from "flowbite-react"
 import { Link } from "react-router-dom"
 
 import logoSvg from "../assets/logo.svg"
+import { useGlobalContext } from "../utils/reducer"
 
-const navbarItemsLoggedIn = [
-  {
-    content: "Home",
-    linkTo: "/",
-  },
-  {
-    content: "Post Idea",
-    linkTo: "/ideas/create",
-  },
-]
-
-const navbarItemsNotLoggedIn = [
-  {
-    content: "Register",
-    linkTo: "/auth/register",
-  },
-  { content: "Login", linkTo: "/auth/login" },
-]
+type navBarItemsTypes = {
+  content: string
+  linkTo?: string
+  onClick?: Function
+}
 
 export default function NavBar() {
+  const { store, dispatch } = useGlobalContext()
+
+  const onClickLogout = () => {
+    dispatch({
+      type: "setToken",
+      data: null,
+    })
+    dispatch({
+      type: "setUser",
+      data: {},
+    })
+  }
+
+  const navbarItemsLoggedIn = [
+    {
+      content: "Home",
+      linkTo: "/",
+    },
+    {
+      content: "Create Profile",
+      linkTo: "/ideas/create",
+    },
+    {
+      content: "Logout",
+      onClick: onClickLogout,
+    },
+  ]
+
+  const navbarItemsNotLoggedIn = [
+    {
+      content: "Register",
+      linkTo: "/auth/register",
+    },
+    { content: "Login", linkTo: "/auth/login" },
+  ]
+  const navbarItems: navBarItemsTypes[] = store.token
+    ? navbarItemsLoggedIn
+    : navbarItemsNotLoggedIn
+
   return (
-    <Navbar fluid rounded>
+    <Navbar fluid rounded className="fixed top-0 w-full">
       <Navbar.Brand as={Link} href="https://flowbite-react.com">
         <img
           src={logoSvg}
@@ -37,8 +64,15 @@ export default function NavBar() {
       </Navbar.Brand>
       <Navbar.Toggle />
       <Navbar.Collapse>
-        {navbarItemsNotLoggedIn.map((item) => (
-          <Navbar.Link key={item.content} href={item.linkTo}>
+        {navbarItems.map((item) => (
+          <Navbar.Link
+            className="cursor-pointer"
+            key={item.content}
+            href={item.linkTo}
+            onClick={() => {
+              item.onClick && item.onClick()
+            }}
+          >
             {item.content}
           </Navbar.Link>
         ))}

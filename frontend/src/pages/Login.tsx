@@ -1,24 +1,24 @@
 import { useNavigate } from "react-router"
-import { useForm } from "react-hook-form"
+import { SubmitHandler, useForm } from "react-hook-form"
 import { useMutation } from "@tanstack/react-query"
 import { Button, Spinner } from "flowbite-react"
 
 import FormInput from "../components/form/FormInput"
-// import { useToast } from "@/components/ui/use-toast"
 
 import { loginUser } from "../apis/user"
-import { useState } from "react"
 import { useGlobalContext } from "../utils/reducer"
-import Toast from "../components/Toast"
-import { AxiosError } from "axios"
+import IAxiosError from "../types/error"
 
 export default function Login() {
   const { dispatch } = useGlobalContext()
-  const [showToast, setShowToast] = useState(false)
-  const [message, setMessage] = useState("")
+
+  type FormValues = {
+    email: string
+    password: string
+  }
 
   const userMutation = useMutation({
-    mutationFn: (values) => {
+    mutationFn: (values: FormValues) => {
       return loginUser(values)
     },
   })
@@ -29,35 +29,50 @@ export default function Login() {
     register,
     handleSubmit,
     formState: { isSubmitting, errors },
-  } = useForm({
+  } = useForm<FormValues>({
     defaultValues: {
       email: "",
       password: "",
     },
   })
 
-  const onSubmit = async (values: void) => {
+  const onSubmit: SubmitHandler<FormValues> = async (values) => {
     try {
       const loginResp = await userMutation.mutateAsync(values)
-      setMessage("Login Successful")
-      setShowToast(true)
-      console.log(loginResp.data.user)
       dispatch({
         type: "setUser",
-        data: loginResp.data.user,
+        data: loginResp.user,
       })
       dispatch({
         type: "setToken",
-        data: loginResp.data.token,
+        data: loginResp.token,
+      })
+      dispatch({
+        type: "showToast",
+        data: {
+          open: true,
+          message: "Login Successful",
+        },
       })
       navigate("/")
     } catch (err) {
-      if (err.response.data.name === "Custom") {
-        setMessage(err.response.data.message)
-        setShowToast(true)
+      let error = err as IAxiosError
+      if (error.response?.data?.name === "Custom") {
+        dispatch({
+          type: "showToast",
+          data: {
+            open: true,
+            message: error.response?.data?.message,
+          },
+        })
       } else {
-        setMessage("Something went wrong!")
-        setShowToast(true)
+        dispatch({
+          type: "showToast",
+          data: {
+            open: true,
+            message: "Something went wrong",
+          },
+        })
       }
     }
   }
@@ -93,15 +108,10 @@ export default function Login() {
         />
 
         <Button disabled={isSubmitting} type="submit">
-          {isSubmitting && <Spinner />}
+          {isSubmitting && <Spinner className="mr-1 h-5" />}
           Login
         </Button>
       </form>
-      <Toast
-        message={message}
-        showToast={showToast}
-        onDismiss={() => setShowToast(false)}
-      />
     </div>
   )
 }

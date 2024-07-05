@@ -1,3 +1,4 @@
 import Login from "./Login"
+import ProfilesPage from "./ProfilesPage"
 
-export { Login }
+export { Login, ProfilesPage }

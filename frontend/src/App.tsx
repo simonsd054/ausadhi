@@ -4,8 +4,11 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom"
 import axios from "axios"
 
 import NavBar from "./components/NavBar"
-import { Login } from "./pages/"
+import { Login, ProfilesPage } from "./pages/"
 import { GlobalContext, globalReducer } from "./utils/reducer.js"
+import Toast from "./components/Toast.js"
+import ProtectedRoute from "./components/ProtectedRoute.js"
+import ForwardToHome from "./components/ForwardToHome.js"
 
 axios.defaults.baseURL = import.meta.env.VITE_API_ENDPOINT // the url of our backend API
 
@@ -23,6 +26,10 @@ const initialState = {
   user: localStorage.getItem("user")
     ? JSON.parse(localStorage.getItem("user") as string)
     : {},
+  toast: {
+    open: false,
+    message: "",
+  },
 }
 
 const router = createBrowserRouter([
@@ -33,7 +40,7 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/auth",
-        // element: <ForwardToHome />,
+        element: <ForwardToHome />,
         children: [
           // {
           //   path: "register",
@@ -45,32 +52,32 @@ const router = createBrowserRouter([
           },
         ],
       },
-      // {
-      //   path: "/",
-      //   element: <ProtectedRoute />,
-      //   children: [
-      //     {
-      //       path: "/ideas/create",
-      //       element: <CreateIdeaPage />,
-      //     },
-      //     {
-      //       path: "/ideas/:id/edit",
-      //       element: <EditIdeaPage />,
-      //     },
-      //     {
-      //       path: "/ideas/:id",
-      //       element: <IdeaDetailPage />,
-      //     },
-      //     {
-      //       path: "/my-ideas",
-      //       element: <MyIdeasPage />,
-      //     },
-      //     {
-      //       path: "/",
-      //       element: <HomePage />,
-      //     },
-      //   ],
-      // },
+      {
+        path: "/",
+        element: <ProtectedRoute />,
+        children: [
+          // {
+          //   path: "/ideas/create",
+          //   element: <CreateIdeaPage />,
+          // },
+          // {
+          //   path: "/ideas/:id/edit",
+          //   element: <EditIdeaPage />,
+          // },
+          // {
+          //   path: "/ideas/:id",
+          //   element: <IdeaDetailPage />,
+          // },
+          // {
+          //   path: "/my-ideas",
+          //   element: <MyIdeasPage />,
+          // },
+          {
+            path: "/",
+            element: <ProfilesPage />,
+          },
+        ],
+      },
     ],
   },
 ])
@@ -78,7 +85,7 @@ const router = createBrowserRouter([
 function MainPage() {
   return (
     <div className="mb-10">
-      <header className="mb-[84px]">
+      <header className="mb-[70px]">
         <NavBar />
       </header>
       <main>
@@ -94,6 +101,7 @@ function App() {
     <>
       <GlobalContext.Provider value={{ store, dispatch }}>
         <RouterProvider router={router} />
+        <Toast message={store.toast.message} showToast={store.toast.open} />
       </GlobalContext.Provider>
     </>
   )

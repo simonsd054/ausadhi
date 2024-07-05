@@ -1,27 +1,47 @@
 import { createContext, useContext } from "react"
 
 enum ActionType {
-  INCREASE = "setToken",
-  DECREASE = "setUser",
+  setToken = "setToken",
+  setUser = "setUser",
+  showToast = "showToast",
 }
 
 interface Action {
   type: ActionType
-  data: string
+  data: any
 }
 
 interface State {
   token: string
-  user: any
+  user: {
+    id: string
+    email: string
+    name: string
+  }
+  toast: {
+    open: boolean
+    message: string
+  }
 }
 
 interface GlobalState {
-  store: any
+  store: State
   dispatch: any
 }
 
 const GlobalContext = createContext<GlobalState>({
-  store: null,
+  store: {
+    token: "",
+    user: {
+      id: "",
+      email: "",
+      name: "",
+    },
+    toast: {
+      open: false,
+      message: "",
+    },
+  },
   dispatch: null,
 })
 const useGlobalContext = () => useContext(GlobalContext)
@@ -40,6 +60,15 @@ function globalReducer(state: State, action: Action) {
       return {
         ...state,
         user: action.data,
+      }
+    }
+    case "showToast": {
+      return {
+        ...state,
+        toast: {
+          open: action.data.open,
+          message: action.data.message,
+        },
       }
     }
     default:
