@@ -15,9 +15,11 @@ export default function FormInput({
   id: string
   registerName: string
   label: string
+  /* eslint-disable @typescript-eslint/no-explicit-any */
   register: UseFormRegister<any>
-  validation: object
+  validation?: object
   errors: FieldErrors
+  /* eslint-disable @typescript-eslint/no-explicit-any */
   [restProps: string]: any
 }) {
   return (

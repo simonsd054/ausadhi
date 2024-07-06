@@ -4,10 +4,10 @@ import { Link } from "react-router-dom"
 import logoSvg from "../assets/logo.svg"
 import { useGlobalContext } from "../utils/reducer"
 
-type navBarItemsTypes = {
+type NavBarItemsTypes = {
   content: string
   linkTo?: string
-  onClick?: Function
+  onClick?: () => void
 }
 
 export default function NavBar() {
@@ -31,7 +31,7 @@ export default function NavBar() {
     },
     {
       content: "Create Profile",
-      linkTo: "/ideas/create",
+      linkTo: "/profiles/create",
     },
     {
       content: "Logout",
@@ -46,7 +46,7 @@ export default function NavBar() {
     },
     { content: "Login", linkTo: "/auth/login" },
   ]
-  const navbarItems: navBarItemsTypes[] = store.token
+  const navbarItems: NavBarItemsTypes[] = store.token
     ? navbarItemsLoggedIn
     : navbarItemsNotLoggedIn
 
@@ -66,9 +66,10 @@ export default function NavBar() {
       <Navbar.Collapse>
         {navbarItems.map((item) => (
           <Navbar.Link
+            as={Link}
+            to={item.linkTo}
             className="cursor-pointer"
             key={item.content}
-            href={item.linkTo}
             onClick={() => {
               item.onClick && item.onClick()
             }}

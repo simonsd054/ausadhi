@@ -1,6 +1,7 @@
 import axios from "axios"
+import { LoginFormValues, RegisterFormValues } from "../types/form"
 
-type loginResponseType = {
+type LoginRegisterResponseType = {
   token: string
   user: {
     id: string
@@ -9,8 +10,16 @@ type loginResponseType = {
   }
 }
 
-const loginUser = async (data: any): Promise<loginResponseType> => {
+const loginUser = async (
+  data: LoginFormValues
+): Promise<LoginRegisterResponseType> => {
   return (await axios.post("/auth/login", data)).data
 }
 
-export { loginUser }
+const registerUser = async (
+  data: RegisterFormValues
+): Promise<LoginRegisterResponseType> => {
+  return (await axios.post("/auth/register", data)).data
+}
+
+export { loginUser, registerUser }

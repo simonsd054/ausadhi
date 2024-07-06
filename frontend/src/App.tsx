@@ -4,7 +4,13 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom"
 import axios from "axios"
 
 import NavBar from "./components/NavBar"
-import { Login, ProfilesPage } from "./pages/"
+import {
+  CreateProfilePage,
+  Login,
+  ProfileDetailPage,
+  ProfilesPage,
+  Register,
+} from "./pages/"
 import { GlobalContext, globalReducer } from "./utils/reducer.js"
 import Toast from "./components/Toast.js"
 import ProtectedRoute from "./components/ProtectedRoute.js"
@@ -42,10 +48,10 @@ const router = createBrowserRouter([
         path: "/auth",
         element: <ForwardToHome />,
         children: [
-          // {
-          //   path: "register",
-          //   element: <Register />,
-          // },
+          {
+            path: "register",
+            element: <Register />,
+          },
           {
             path: "login",
             element: <Login />,
@@ -56,18 +62,18 @@ const router = createBrowserRouter([
         path: "/",
         element: <ProtectedRoute />,
         children: [
-          // {
-          //   path: "/ideas/create",
-          //   element: <CreateIdeaPage />,
-          // },
+          {
+            path: "/profiles/create",
+            element: <CreateProfilePage />,
+          },
           // {
           //   path: "/ideas/:id/edit",
           //   element: <EditIdeaPage />,
           // },
-          // {
-          //   path: "/ideas/:id",
-          //   element: <IdeaDetailPage />,
-          // },
+          {
+            path: "/profiles/:id",
+            element: <ProfileDetailPage />,
+          },
           // {
           //   path: "/my-ideas",
           //   element: <MyIdeasPage />,

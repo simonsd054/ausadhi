@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom"
 import { useQuery } from "@tanstack/react-query"
 import { Card, Spinner } from "flowbite-react"
 
@@ -26,17 +27,21 @@ export default function ProfilesPage() {
         (data.length === 0 ? (
           "No Profiles found"
         ) : (
-          <div className="grid grid-cols-3 gap-10">
+          <div className="flex flex-wrap justify-around w-full">
             {data.map((profile) => {
               return (
-                <Card href={`/profiles/${profile._id}`} className="max-w-sm mb-10 ">
-                  <h5 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-                    {profile.name}
-                  </h5>
-                  <p className="font-normal text-gray-700 dark:text-gray-400">
-                    {profile.relation}
-                  </p>
-                </Card>
+                <div key={profile._id} className="p-10 w-1/3">
+                  <Link to={`/profiles/${profile._id}`}>
+                    <Card className="max-w-sm">
+                      <h5 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+                        {profile.name}
+                      </h5>
+                      <p className="font-normal text-gray-700 dark:text-gray-400">
+                        {profile.relation}
+                      </p>
+                    </Card>
+                  </Link>
+                </div>
               )
             })}
           </div>

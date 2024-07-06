@@ -1,17 +1,38 @@
 import axios from "axios"
+import { ProfileFormValues } from "../types/form"
 
-export type getProfilesResponseType = {
+type MedicationType = {
+  _id: string
+  name: string
+  composition?: string
+  type?: string
+  dailyFrequency: number
+  timings?: string[]
+  dosage?: number
+}
+
+type GetProfileResponseType = {
   _id: string
   name: string
   relation: string
   userId: string
-  medications: string[]
-  createdAt: string
-  updatedAt: string
-}[]
+  medications: MedicationType[]
+}
 
-const getProfiles = async (): Promise<getProfilesResponseType> => {
+type GetProfilesResponseType = GetProfileResponseType[]
+
+const getProfiles = async (): Promise<GetProfilesResponseType> => {
   return (await axios.get("/profiles")).data
 }
 
-export { getProfiles }
+const getProfile = async (id: string): Promise<GetProfileResponseType> => {
+  return (await axios.get(`/profiles/${id}`)).data
+}
+
+const createProfile = async (
+  data: ProfileFormValues
+): Promise<GetProfileResponseType> => {
+  return (await axios.post("/profiles", data)).data
+}
+
+export { getProfiles, getProfile, createProfile }
