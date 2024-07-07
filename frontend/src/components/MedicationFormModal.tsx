@@ -2,13 +2,14 @@ import { SubmitHandler, useForm } from "react-hook-form"
 import { Button, Modal } from "flowbite-react"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 
-import { createMedication } from "../apis/profile"
+import { createMedication, editMedication } from "../apis/profile"
 import MedicationForm from "./MedicationForm"
 import { MedicationFormValues } from "../types/form"
 import { useGlobalContext } from "../utils/reducer"
 import IAxiosError from "../types/error"
 
 export default function MedicationFormModal({
+  isEdit = false,
   openModal,
   setOpenModal,
   prevValues = {
@@ -16,11 +17,14 @@ export default function MedicationFormModal({
     dailyFrequency: 0,
   },
   profile_id,
+  medication_id,
 }: {
-  openModal: boolean
-  setOpenModal: (data: boolean) => void
+  isEdit?: boolean
+  openModal: string
+  setOpenModal: (data: string) => void
   prevValues?: MedicationFormValues
   profile_id: string
+  medication_id?: string
 }) {
   const { dispatch } = useGlobalContext()
 
@@ -31,7 +35,16 @@ export default function MedicationFormModal({
       return createMedication(variables, profile_id)
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["profile", profile_id] })
+      queryClient.invalidateQueries({ queryKey: ["profiles", profile_id] })
+    },
+  })
+
+  const editMedicationMutation = useMutation({
+    mutationFn: (variables: MedicationFormValues) => {
+      return editMedication(variables, profile_id, medication_id as string)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["profiles", profile_id] })
     },
   })
 
@@ -51,18 +64,30 @@ export default function MedicationFormModal({
     values.timings = values.timings?.filter((timing) => timing !== "")
 
     try {
-      await createMedicationMutation.mutateAsync(values)
+      if (isEdit) {
+        await editMedicationMutation.mutateAsync(values)
+      } else {
+        await createMedicationMutation.mutateAsync(values)
+      }
       dispatch({
         type: "showToast",
         data: {
           open: true,
-          message: "Medication Created Successfully",
+          message: `Medication ${isEdit ? "Edited" : "Created"} Successfully`,
         },
       })
-      setOpenModal(false)
-      reset()
+      setOpenModal("")
+      if (!isEdit) {
+        reset({
+          name: "",
+          dailyFrequency: 0,
+          composition: "",
+          dosage: 0,
+          timings: [],
+          type: "",
+        })
+      }
     } catch (err) {
-      console.log(err)
       const error = err as IAxiosError
       if (error.response?.data?.name === "Custom") {
         dispatch({
@@ -87,8 +112,11 @@ export default function MedicationFormModal({
   const dailyFrequencyValue = watch(`dailyFrequency`)
 
   return (
-    <Modal show={openModal} onClose={() => setOpenModal(false)}>
-      <Modal.Header>Terms of Service</Modal.Header>
+    <Modal
+      show={Boolean(openModal) && (isEdit ? openModal === medication_id : true)}
+      onClose={() => setOpenModal("")}
+    >
+      <Modal.Header>{isEdit ? "Edit" : "Add"} Medication</Modal.Header>
       <Modal.Body>
         <MedicationForm
           dailyFrequencyValue={dailyFrequencyValue}
@@ -99,12 +127,12 @@ export default function MedicationFormModal({
       </Modal.Body>
       <Modal.Footer>
         <Button disabled={isSubmitting} onClick={handleSubmit(onClickSubmit)}>
-          Add
+          {isEdit ? "Edit" : "Add"}
         </Button>
         <Button
           disabled={isSubmitting}
           color="gray"
-          onClick={() => setOpenModal(false)}
+          onClick={() => setOpenModal("")}
         >
           Cancel
         </Button>

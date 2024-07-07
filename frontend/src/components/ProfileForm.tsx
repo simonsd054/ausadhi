@@ -1,9 +1,9 @@
 import { useFieldArray, useForm } from "react-hook-form"
 import { Button, Card, Spinner } from "flowbite-react"
-import { HiTrash } from "react-icons/hi2"
+import { HiChevronLeft, HiTrash } from "react-icons/hi2"
+import { useNavigate } from "react-router-dom"
 
 import FormInput from "../components/form/FormInput"
-
 import { ProfileFormValues } from "../types/form"
 import MedicationForm from "../components/MedicationForm"
 
@@ -26,6 +26,8 @@ export default function ProfileForm({
     defaultValues: prevValues,
   })
 
+  const navigate = useNavigate()
+
   const { fields, append, remove } = useFieldArray<ProfileFormValues>({
     control,
     name: "medications",
@@ -33,9 +35,22 @@ export default function ProfileForm({
 
   return (
     <div className="flex flex-col items-center">
-      <h1 className="text-3xl font-bold mb-10">
-        {isEdit ? "Edit " : "Create "}Profile
-      </h1>
+      <div className="w-4/5 flex justify-between items-center gap-20 mb-10">
+        <div>
+          <Button
+            outline
+            color="gray"
+            className="border-none"
+            onClick={() => navigate("/")}
+          >
+            <HiChevronLeft className="h-6 w-6" />
+          </Button>
+        </div>
+        <h1 className="text-3xl font-bold">
+          {isEdit ? "Edit " : "Create "}Profile
+        </h1>
+        <div></div>
+      </div>
       <form className="w-6/12" onSubmit={handleSubmit(onSubmit)}>
         <FormInput
           id="name"

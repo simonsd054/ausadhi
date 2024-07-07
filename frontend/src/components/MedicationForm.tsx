@@ -103,7 +103,7 @@ export default function MedicationForm({
         type="number"
       />
       <div className="flex gap-5 items-center">
-        <h1>Timings:</h1>
+        <h1 className="mb-2">Timings:</h1>
         {Number(dailyFrequencyValue) < 1 && "N/A"}
         <div>
           {Array.from(
@@ -155,6 +155,7 @@ export default function MedicationForm({
         label="Dosage"
         register={register}
         errors={errors}
+        type="number"
       />
     </div>
   )

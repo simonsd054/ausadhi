@@ -55,6 +55,28 @@ const deleteProfile = async (
   return (await axios.delete(`/profiles/${profile_id}`)).data
 }
 
+const deleteMedication = async (
+  profile_id: string,
+  medication_id: string
+): Promise<GetProfileResponseType> => {
+  return (
+    await axios.delete(`/profiles/${profile_id}/medications/${medication_id}`)
+  ).data
+}
+
+const editMedication = async (
+  data: MedicationFormValues,
+  profile_id: string,
+  medication_id: string
+): Promise<GetMedicationResponseType> => {
+  return (
+    await axios.patch(
+      `/profiles/${profile_id}/medications/${medication_id}`,
+      data
+    )
+  ).data
+}
+
 export {
   getProfiles,
   getProfile,
@@ -62,4 +84,6 @@ export {
   createMedication,
   editProfile,
   deleteProfile,
+  deleteMedication,
+  editMedication,
 }
