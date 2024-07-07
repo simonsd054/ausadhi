@@ -51,7 +51,7 @@ export default function NavBar() {
     : navbarItemsNotLoggedIn
 
   return (
-    <Navbar fluid rounded className="fixed top-0 w-full">
+    <Navbar fluid rounded className="fixed top-0 w-full z-10">
       <Navbar.Brand as={Link} href="https://flowbite-react.com">
         <img
           src={logoSvg}

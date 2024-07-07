@@ -1,7 +1,7 @@
 import axios from "axios"
-import { ProfileFormValues } from "../types/form"
+import { MedicationFormValues, ProfileFormValues } from "../types/form"
 
-type MedicationType = {
+type GetMedicationResponseType = {
   _id: string
   name: string
   composition?: string
@@ -16,7 +16,7 @@ type GetProfileResponseType = {
   name: string
   relation: string
   userId: string
-  medications: MedicationType[]
+  medications: GetMedicationResponseType[]
 }
 
 type GetProfilesResponseType = GetProfileResponseType[]
@@ -35,4 +35,31 @@ const createProfile = async (
   return (await axios.post("/profiles", data)).data
 }
 
-export { getProfiles, getProfile, createProfile }
+const createMedication = async (
+  data: MedicationFormValues,
+  profile_id: string
+): Promise<GetMedicationResponseType> => {
+  return (await axios.post(`/profiles/${profile_id}/medications`, data)).data
+}
+
+const editProfile = async (
+  data: ProfileFormValues,
+  profile_id: string
+): Promise<GetProfileResponseType> => {
+  return (await axios.patch(`/profiles/${profile_id}`, data)).data
+}
+
+const deleteProfile = async (
+  profile_id: string
+): Promise<GetProfileResponseType> => {
+  return (await axios.delete(`/profiles/${profile_id}`)).data
+}
+
+export {
+  getProfiles,
+  getProfile,
+  createProfile,
+  createMedication,
+  editProfile,
+  deleteProfile,
+}

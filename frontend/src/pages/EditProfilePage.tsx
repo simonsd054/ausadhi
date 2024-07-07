@@ -1,19 +1,35 @@
 import { useNavigate } from "react-router"
 import { SubmitHandler } from "react-hook-form"
-import { useMutation } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { useParams } from "react-router-dom"
 
-import { createProfile } from "../apis/profile"
+import { editProfile, getProfile } from "../apis/profile"
 import { useGlobalContext } from "../utils/reducer"
 import IAxiosError from "../types/error"
 import ProfileForm from "../components/ProfileForm"
 import { ProfileFormValues } from "../types/form"
+import { Spinner } from "flowbite-react"
 
-export default function CreateProfilePage() {
+export default function EditProfilePage() {
   const { dispatch } = useGlobalContext()
 
-  const createProfileMutation = useMutation({
+  const params = useParams()
+
+  const queryClient = useQueryClient()
+
+  const { data, isPending } = useQuery({
+    queryKey: ["profiles", params.id],
+    queryFn: () => {
+      return getProfile(params.id as string)
+    },
+  })
+
+  const editProfileMutation = useMutation({
     mutationFn: (variables: ProfileFormValues) => {
-      return createProfile(variables)
+      return editProfile(variables, params.id as string)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["profiles", params.id] })
     },
   })
   const navigate = useNavigate()
@@ -25,12 +41,12 @@ export default function CreateProfilePage() {
     }))
 
     try {
-      await createProfileMutation.mutateAsync(values)
+      await editProfileMutation.mutateAsync(values)
       dispatch({
         type: "showToast",
         data: {
           open: true,
-          message: "Profile Created Successfully",
+          message: "Profile Edited Successfully",
         },
       })
       navigate("/")
@@ -55,5 +71,11 @@ export default function CreateProfilePage() {
       }
     }
   }
-  return <ProfileForm onSubmit={onSubmit} />
+  return isPending ? (
+    <div className="flex justify-center">
+      <Spinner />
+    </div>
+  ) : (
+    <ProfileForm isEdit prevValues={data} onSubmit={onSubmit} />
+  )
 }

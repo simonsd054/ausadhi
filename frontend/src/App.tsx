@@ -6,6 +6,7 @@ import axios from "axios"
 import NavBar from "./components/NavBar"
 import {
   CreateProfilePage,
+  EditProfilePage,
   Login,
   ProfileDetailPage,
   ProfilesPage,
@@ -66,10 +67,10 @@ const router = createBrowserRouter([
             path: "/profiles/create",
             element: <CreateProfilePage />,
           },
-          // {
-          //   path: "/ideas/:id/edit",
-          //   element: <EditIdeaPage />,
-          // },
+          {
+            path: "/profiles/:id/edit",
+            element: <EditProfilePage />,
+          },
           {
             path: "/profiles/:id",
             element: <ProfileDetailPage />,
