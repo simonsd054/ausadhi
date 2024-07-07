@@ -66,6 +66,14 @@ const medicationSchema = new Schema<IMedication, MedicationModelType>(
   }
 )
 
+medicationSchema.pre("validate", function (next) {
+  if (this.dailyFrequency === this.timings?.length) {
+    next(new Error("Timings length must be equal to daily frequency value"))
+  } else {
+    next()
+  }
+})
+
 const profileSchema = new Schema<IProfile, ProfileModelType>(
   {
     name: {
@@ -97,7 +105,6 @@ const MedicationModel = model<IMedication, MedicationModelType>(
 )
 
 const ProfileModel = model<IProfile, ProfileModelType>("Profile", profileSchema)
-
 
 export default ProfileModel
 
