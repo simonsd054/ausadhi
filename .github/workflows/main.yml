@@ -84,7 +84,7 @@ jobs:
           --zone "${{ env.GCE_INSTANCE_ZONE }}" \
           --metadata=startup-script="#! /bin/bash
             docker image prune -af
-            export MONGO_URI='${{ secrets.MONGO_URI }}'"
+            export MONGO_URI='${{ secrets.MONGO_URI }}'
             export JWT_SECRET='${{ secrets.JWT_SECRET }}'"
 
     - name: Deploy
