@@ -18,6 +18,7 @@ const errorHandler = (
       ...error,
       status: errStatus,
       message: errMsg,
+      name: err.name,
     }
     return res.status(errStatus).json(error)
   } else {
