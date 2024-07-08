@@ -1,15 +1,23 @@
 import { createContext, useContext } from "react"
 
-enum ActionType {
-  setToken = "setToken",
-  setUser = "setUser",
-  showToast = "showToast",
-}
-
-interface Action {
-  type: ActionType
-  data: any
-}
+type Action =
+  | { type: "setToken"; data: string }
+  /* eslint-disable @typescript-eslint/no-explicit-any */
+  | {
+      type: "setUser"
+      data: {
+        id: string
+        name: string
+        email: string
+      }
+    }
+  | {
+      type: "showToast"
+      data: {
+        open: boolean
+        message: string
+      }
+    }
 
 interface State {
   token: string
@@ -26,6 +34,7 @@ interface State {
 
 interface GlobalState {
   store: State
+  /* eslint-disable @typescript-eslint/no-explicit-any */
   dispatch: any
 }
 

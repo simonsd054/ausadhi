@@ -8,6 +8,7 @@ import {
 } from "mongoose"
 
 import checkUnique from "../utils/checkUnique"
+import CustomError from "../../utils/customError"
 
 interface IMedication {
   _id: Types.ObjectId
@@ -66,9 +67,14 @@ const medicationSchema = new Schema<IMedication, MedicationModelType>(
   }
 )
 
-medicationSchema.pre("validate", function (next) {
-  if (this.dailyFrequency === this.timings?.length) {
-    next(new Error("Timings length must be equal to daily frequency value"))
+medicationSchema.pre("save", function (next) {
+  if (this.dailyFrequency !== this.timings?.length) {
+    next(
+      new CustomError(
+        "Timings length must be equal to daily frequency value",
+        400
+      )
+    )
   } else {
     next()
   }
@@ -79,12 +85,6 @@ const profileSchema = new Schema<IProfile, ProfileModelType>(
     name: {
       type: String,
       required: true,
-      validate: {
-        validator: async function (v: string) {
-          return await checkUnique("Profile", "email", v)
-        },
-        message: ({ value }: { value: string }) => `${value} already exists`,
-      },
     },
     relation: String,
     userId: {
@@ -98,6 +98,15 @@ const profileSchema = new Schema<IProfile, ProfileModelType>(
     timestamps: true,
   }
 )
+
+profileSchema.pre("save", async function (next) {
+  const isUnique = await checkUnique("Profile", "name", this.name)
+  if (!isUnique) {
+    next(new CustomError("Profile with this name already exists", 409))
+  } else {
+    next()
+  }
+})
 
 const MedicationModel = model<IMedication, MedicationModelType>(
   "Medication",

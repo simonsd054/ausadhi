@@ -108,7 +108,16 @@ function App() {
     <>
       <GlobalContext.Provider value={{ store, dispatch }}>
         <RouterProvider router={router} />
-        <Toast message={store.toast.message} showToast={store.toast.open} />
+        <Toast message={store.toast.message} showToast={store.toast.open} onDismiss={() => {
+          dispatch({
+            type: "showToast",
+            data: {
+              open: false,
+              message: "",
+            },
+
+          })
+        }} />
       </GlobalContext.Provider>
     </>
   )

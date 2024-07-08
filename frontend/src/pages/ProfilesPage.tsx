@@ -75,66 +75,89 @@ export default function ProfilesPage() {
       {isPending ? (
         <Spinner />
       ) : (
-        isSuccess &&
-        (data.length === 0 ? (
-          "No Profiles found"
-        ) : (
-          <div className="flex flex-wrap justify-around w-full">
-            {data.map((profile) => {
-              return (
-                <div key={profile._id} className="p-10 w-1/3">
-                  <Card className="max-w-sm hover:bg-gray-300">
-                    <Link
-                      className="hover:underline"
-                      to={`/profiles/${profile._id}`}
-                    >
-                      <div>
-                        <h5 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-                          {profile.name}
-                        </h5>
-                        <p className="font-normal text-gray-700 dark:text-gray-400">
-                          {profile.relation}
-                        </p>
-                      </div>
-                    </Link>
-                    <div className="flex justify-around">
-                      <Button
-                        as={Link}
-                        to={`/profiles/${profile._id}/edit`}
-                        color="gray"
-                      >
-                        <HiPencilSquare className="h-5 w-5" />
-                      </Button>
-                      <Button
-                        onClick={() => setOpenModal(profile._id)}
-                        color="gray"
-                      >
-                        <HiTrash className="h-5 w-5" />
-                      </Button>
-                      <Modal
-                        show={openModal === profile._id}
-                        onClose={() => setOpenModal("")}
-                      >
-                        <Modal.Header>
-                          Are you sure you want to delete this profile named "
-                          {profile.name}"?
-                        </Modal.Header>
-                        <Modal.Footer>
-                          <Button onClick={() => onClickDelete(profile._id)}>
-                            Yes
+        isSuccess && (
+          <div
+            className={`flex ${
+              data.length === 0 && "flex-col"
+            } flex-wrap justify-around w-full items-center`}
+          >
+            {data.length === 0 ? (
+              "No Profiles found"
+            ) : (
+              <>
+                {data.map((profile) => {
+                  return (
+                    <div key={profile._id} className="p-10 w-1/3">
+                      <Card className="max-w-sm hover:bg-gray-300">
+                        <Link
+                          className="hover:underline"
+                          to={`/profiles/${profile._id}`}
+                        >
+                          <div>
+                            <h5 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+                              {profile.name}
+                            </h5>
+                            <p className="font-normal text-gray-700 dark:text-gray-400">
+                              {profile.relation}
+                            </p>
+                          </div>
+                        </Link>
+                        <div className="flex justify-around">
+                          <Button
+                            as={Link}
+                            to={`/profiles/${profile._id}/edit`}
+                            color="gray"
+                            className="hover:bg-slate-100 hover:text-blue-700"
+                          >
+                            <HiPencilSquare className="h-5 w-5" />
                           </Button>
-                          <Button color="gray" onClick={() => setOpenModal("")}>
-                            No
+                          <Button
+                            onClick={() => setOpenModal(profile._id)}
+                            color="gray"
+                          >
+                            <HiTrash className="h-5 w-5" />
                           </Button>
-                        </Modal.Footer>
-                      </Modal>
+                          <Modal
+                            show={openModal === profile._id}
+                            onClose={() => setOpenModal("")}
+                          >
+                            <Modal.Header>
+                              Are you sure you want to delete this profile named
+                              "{profile.name}"?
+                            </Modal.Header>
+                            <Modal.Footer>
+                              <Button
+                                onClick={() => onClickDelete(profile._id)}
+                              >
+                                Yes
+                              </Button>
+                              <Button
+                                color="gray"
+                                onClick={() => setOpenModal("")}
+                              >
+                                No
+                              </Button>
+                            </Modal.Footer>
+                          </Modal>
+                        </div>
+                      </Card>
                     </div>
-                  </Card>
-                </div>
-              )
-            })}
+                  )
+                })}
+              </>
+            )}
+            <div className="p-10 w-1/3">
+              <Link to={`/profiles/create`}>
+                <Card className="max-w-sm flex flex-col items-center justify-center border-dashed text-gray-700 hover:bg-gray-300 hover:cursor-pointer">
+                  <div>
+                    <div className="text-center text-6xl font-thin">+</div>
+                    <div>Add New Profile</div>
+                  </div>
+                </Card>
+              </Link>
+            </div>
           </div>
-        ))
+        )
       )}
     </div>
   )

@@ -7,6 +7,7 @@ import {
 } from "mongoose"
 
 import checkUnique from "../utils/checkUnique"
+import CustomError from "../../utils/customError"
 
 interface IUser {
   name: string
@@ -28,12 +29,6 @@ const userSchema = new Schema<IUser, UserModelType>(
     email: {
       type: String,
       required: true,
-      validate: {
-        validator: async function (v: string) {
-          return await checkUnique("User", "email", v)
-        },
-        message: ({ value }: { value: string }) => `${value} already exists`,
-      },
     },
     emailVerifiedAt: Date,
     password: {
@@ -45,6 +40,15 @@ const userSchema = new Schema<IUser, UserModelType>(
     timestamps: true,
   }
 )
+
+userSchema.pre("save", async function (next) {
+  const isUnique = await checkUnique("User", "email", this.email)
+  if (!isUnique) {
+    next(new CustomError("Email address already exists", 409))
+  } else {
+    next()
+  }
+})
 
 const UserModel = model<IUser, UserModelType>("User", userSchema)
 
