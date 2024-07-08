@@ -67,15 +67,17 @@ export default function ProfilesPage() {
   return (
     <div className="flex flex-col justify-center items-center">
       <h1 className="text-3xl font-bold mb-10">Profiles</h1>
-      {isError && (
-        <h1 className="text-2xl text-red-700">
-          Something's wrong! Try again later!
-        </h1>
-      )}
+      {isError ||
+        (!Array.isArray(data) && (
+          <h1 className="text-2xl text-red-700">
+            Something's wrong! Try again later!
+          </h1>
+        ))}
       {isPending ? (
         <Spinner />
       ) : (
-        isSuccess && (
+        isSuccess &&
+        Array.isArray(data) && (
           <div
             className={`flex ${
               data.length === 0 && "flex-col"
@@ -85,7 +87,7 @@ export default function ProfilesPage() {
               "No Profiles found"
             ) : (
               <>
-                {data.map((profile) => {
+                {data?.map((profile) => {
                   return (
                     <div key={profile._id} className="p-10 w-1/3">
                       <Card className="max-w-sm hover:bg-gray-300">

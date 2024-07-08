@@ -73,7 +73,7 @@ export default function ProfileDetailPage() {
 
   return (
     <div className="flex flex-col justify-center items-center">
-      {isError && (
+      {isError || !data?.medications && (
         <h1 className="text-2xl text-red-700">
           Something's wrong! Try again later!
         </h1>
@@ -106,14 +106,14 @@ export default function ProfileDetailPage() {
             </div>
             <div
               className={`flex ${
-                data.medications.length === 0 && "flex-col"
+                data.medications && data.medications.length === 0 && "flex-col"
               } flex-wrap justify-around w-full items-center`}
             >
-              {data.medications.length === 0 ? (
+              {data.medications && data.medications.length === 0 ? (
                 <div>No medications found</div>
               ) : (
                 <>
-                  {data.medications.map((medication) => {
+                  {data.medications && data.medications.map((medication) => {
                     return (
                       <div key={medication._id} className="p-10 w-1/3">
                         <Card className="max-w-sm">
