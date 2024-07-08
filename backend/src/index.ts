@@ -1,6 +1,7 @@
 import express, { Request, Response } from "express"
 import mongoose from "mongoose"
 import { config } from "dotenv"
+import path from "path"
 import cors from "cors"
 
 import userRouter from "./routes/userRoutes"
@@ -13,25 +14,19 @@ const app = express()
 
 let port = process.env.PORT || 8000
 
-app.use(
-  cors({
-    origin: [process.env.FRONTEND_ENDPOINT as string], // the origin that we want to accept, i.e. our frontend
-    optionsSuccessStatus: 200,
-  })
-)
+app.use(cors())
 
 app.use(express.json())
 
 app.use("/api/auth", userRouter)
 app.use("/api/profiles", profileRouter)
 
-app.get("/", (req: Request, res: Response) => {
-  res.json({
-    message: "Hello World!!",
-  })
-})
-
 app.use(errorHandler)
+
+app.use(express.static(path.resolve(__dirname, "..", "dist")))
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "dist/index.html"))
+})
 
 app.listen(port, () => {
   console.log(`Server running at port ${port}`)

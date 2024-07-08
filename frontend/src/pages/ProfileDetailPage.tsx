@@ -73,11 +73,12 @@ export default function ProfileDetailPage() {
 
   return (
     <div className="flex flex-col justify-center items-center">
-      {isError || !data?.medications && (
-        <h1 className="text-2xl text-red-700">
-          Something's wrong! Try again later!
-        </h1>
-      )}
+      {isError ||
+        (isSuccess && !data?.medications && (
+          <h1 className="text-2xl text-red-700">
+            Something's wrong! Try again later!
+          </h1>
+        ))}
       {isPending ? (
         <Spinner />
       ) : (
@@ -113,92 +114,101 @@ export default function ProfileDetailPage() {
                 <div>No medications found</div>
               ) : (
                 <>
-                  {data.medications && data.medications.map((medication) => {
-                    return (
-                      <div key={medication._id} className="p-10 w-1/3">
-                        <Card className="max-w-sm">
-                          <h5 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-                            {medication.name}
-                          </h5>
-                          <ListGroup>
-                            <ListGroup.Item>
-                              composition: {medication.composition || "N/A"}
-                            </ListGroup.Item>
-                            <ListGroup.Item>
-                              type: {medication.type || "N/A"}
-                            </ListGroup.Item>
-                            <ListGroup.Item>
-                              frequency:{" "}
-                              {medication.dailyFrequency
-                                ? medication.dailyFrequency + " per day"
-                                : "N/A"}
-                            </ListGroup.Item>
-                            <ListGroup.Item>
-                              timings:
-                              {medication?.timings &&
-                              medication?.timings?.length > 0 ? (
-                                <List unstyled className="ml-2">
-                                  {medication.timings.map((timing) => (
-                                    <List.Item key={timing}>{timing}</List.Item>
-                                  ))}
-                                </List>
-                              ) : (
-                                "N/A"
-                              )}
-                            </ListGroup.Item>
-                            <ListGroup.Item>
-                              dosage: {medication.dosage || "N/A"}
-                            </ListGroup.Item>
-                          </ListGroup>
-                          <div className="flex justify-around">
-                            <Button
-                              onClick={() => setOpenEditModal(medication._id)}
-                              color="gray"
-                            >
-                              <HiPencilSquare className="h-5 w-5" />
-                            </Button>
-                            <Button
-                              onClick={() => setOpenDeleteModal(medication._id)}
-                              color="gray"
-                            >
-                              <HiTrash className="h-5 w-5" />
-                            </Button>
-                            <Modal
-                              show={openDeleteModal === medication._id}
-                              onClose={() => setOpenDeleteModal("")}
-                            >
-                              <Modal.Header>
-                                Are you sure you want to delete this profile
-                                named "{medication.name}"?
-                              </Modal.Header>
-                              <Modal.Footer>
-                                <Button
-                                  disabled={deleteMedicationMutation.isPending}
-                                  onClick={() => onClickDelete(medication._id)}
-                                >
-                                  Yes
-                                </Button>
-                                <Button
-                                  color="gray"
-                                  onClick={() => setOpenDeleteModal("")}
-                                >
-                                  No
-                                </Button>
-                              </Modal.Footer>
-                            </Modal>
-                          </div>
-                        </Card>
-                        <MedicationFormModal
-                          isEdit
-                          medication_id={medication._id}
-                          openModal={openEditModal}
-                          setOpenModal={setOpenEditModal}
-                          profile_id={params.id as string}
-                          prevValues={medication}
-                        />
-                      </div>
-                    )
-                  })}
+                  {data.medications &&
+                    data.medications.map((medication) => {
+                      return (
+                        <div key={medication._id} className="p-10 w-1/3">
+                          <Card className="max-w-sm">
+                            <h5 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+                              {medication.name}
+                            </h5>
+                            <ListGroup>
+                              <ListGroup.Item>
+                                composition: {medication.composition || "N/A"}
+                              </ListGroup.Item>
+                              <ListGroup.Item>
+                                type: {medication.type || "N/A"}
+                              </ListGroup.Item>
+                              <ListGroup.Item>
+                                frequency:{" "}
+                                {medication.dailyFrequency
+                                  ? medication.dailyFrequency + " per day"
+                                  : "N/A"}
+                              </ListGroup.Item>
+                              <ListGroup.Item>
+                                timings:
+                                {medication?.timings &&
+                                medication?.timings?.length > 0 ? (
+                                  <List unstyled className="ml-2">
+                                    {medication.timings.map((timing) => (
+                                      <List.Item key={timing}>
+                                        {timing}
+                                      </List.Item>
+                                    ))}
+                                  </List>
+                                ) : (
+                                  "N/A"
+                                )}
+                              </ListGroup.Item>
+                              <ListGroup.Item>
+                                dosage: {medication.dosage || "N/A"}
+                              </ListGroup.Item>
+                            </ListGroup>
+                            <div className="flex justify-around">
+                              <Button
+                                onClick={() => setOpenEditModal(medication._id)}
+                                color="gray"
+                              >
+                                <HiPencilSquare className="h-5 w-5" />
+                              </Button>
+                              <Button
+                                onClick={() =>
+                                  setOpenDeleteModal(medication._id)
+                                }
+                                color="gray"
+                              >
+                                <HiTrash className="h-5 w-5" />
+                              </Button>
+                              <Modal
+                                show={openDeleteModal === medication._id}
+                                onClose={() => setOpenDeleteModal("")}
+                              >
+                                <Modal.Header>
+                                  Are you sure you want to delete this profile
+                                  named "{medication.name}"?
+                                </Modal.Header>
+                                <Modal.Footer>
+                                  <Button
+                                    disabled={
+                                      deleteMedicationMutation.isPending
+                                    }
+                                    onClick={() =>
+                                      onClickDelete(medication._id)
+                                    }
+                                  >
+                                    Yes
+                                  </Button>
+                                  <Button
+                                    color="gray"
+                                    onClick={() => setOpenDeleteModal("")}
+                                  >
+                                    No
+                                  </Button>
+                                </Modal.Footer>
+                              </Modal>
+                            </div>
+                          </Card>
+                          <MedicationFormModal
+                            isEdit
+                            medication_id={medication._id}
+                            openModal={openEditModal}
+                            setOpenModal={setOpenEditModal}
+                            profile_id={params.id as string}
+                            prevValues={medication}
+                          />
+                        </div>
+                      )
+                    })}
                 </>
               )}
               <div className="p-10 w-1/3">

@@ -41,7 +41,7 @@ const userSchema = new Schema<IUser, UserModelType>(
   }
 )
 
-userSchema.pre("save", async function (next) {
+userSchema.pre("validate", async function (next) {
   const isUnique = await checkUnique("User", "email", this.email)
   if (!isUnique) {
     next(new CustomError("Email address already exists", 409))

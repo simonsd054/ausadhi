@@ -36,7 +36,7 @@ const updateProfile = async (req: Request, res: Response) => {
       userId: req.body.user.id,
     },
     profile,
-    { new: true }
+    { new: true, runValidators: true }
   )
   if (!profileUpdated) {
     throw new CustomError("Profile couldn't be updated.", 400)

@@ -67,7 +67,7 @@ const medicationSchema = new Schema<IMedication, MedicationModelType>(
   }
 )
 
-medicationSchema.pre("save", function (next) {
+medicationSchema.pre("validate", function (next) {
   if (this.dailyFrequency !== this.timings?.length) {
     next(
       new CustomError(
@@ -99,8 +99,24 @@ const profileSchema = new Schema<IProfile, ProfileModelType>(
   }
 )
 
-profileSchema.pre("save", async function (next) {
-  const isUnique = await checkUnique("Profile", "name", this.name)
+profileSchema.pre("findOneAndUpdate", async function (next) {
+  const docToUpdate = await this.model.findOne(this.getQuery())
+  const updateQuery = JSON.parse(JSON.stringify(this.getUpdate()))
+  const isUnique = await checkUnique(
+    "Profile",
+    "name",
+    updateQuery.name,
+    docToUpdate._id
+  )
+  if (!isUnique) {
+    next(new CustomError("Profile with this name already exists", 409))
+  } else {
+    next()
+  }
+})
+
+profileSchema.pre("validate", async function (next) {
+  const isUnique = await checkUnique("Profile", "name", this.name, this._id)
   if (!isUnique) {
     next(new CustomError("Profile with this name already exists", 409))
   } else {

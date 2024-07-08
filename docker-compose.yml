@@ -1,0 +1,4 @@
+services:
+  server:
+    image: server
+    network_mode: host

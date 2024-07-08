@@ -68,7 +68,7 @@ export default function ProfilesPage() {
     <div className="flex flex-col justify-center items-center">
       <h1 className="text-3xl font-bold mb-10">Profiles</h1>
       {isError ||
-        (!Array.isArray(data) && (
+        (isSuccess && !Array.isArray(data) && (
           <h1 className="text-2xl text-red-700">
             Something's wrong! Try again later!
           </h1>
