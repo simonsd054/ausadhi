@@ -18,6 +18,7 @@ on:
   push:
     branches:
     - 'main'
+    - 'gce-check'
 
 env:
   PROJECT_ID: ausadhi
@@ -76,10 +77,26 @@ jobs:
       run: |-
         docker push "${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.GAR_NAME }}/${{ env.GCE_INSTANCE }}:${{ github.sha }}"
 
+    # Add pruning and IP address update to VM startup script
+    - name: Update startup script to prune and update IP address
+      run: |-
+        gcloud compute instances add-metadata "${{ env.GCE_INSTANCE }}" \
+          --zone "${{ env.GCE_INSTANCE_ZONE }}" \
+          --metadata=startup-script="#! /bin/bash
+            docker image prune -af
+            export MONGO_URI='${{ secrets.MONGO_URI }}'"
+            export JWT_SECRET='${{ secrets.JWT_SECRET }}'"
+
     - name: Deploy
       run: |-
-        gcloud compute instances update-container "$GCE_INSTANCE" \
+        gcloud compute instances update-container "${{ env.GCE_INSTANCE }}" \
           --zone "${{ env.GCE_INSTANCE_ZONE }}" \
-          --container-image "${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.GAR_NAME }}/${{ env.GCE_INSTANCE }}:${{ github.sha }}" \
-          --metadata=startup-script="#! /bin/bash
-            docker image prune -af"
+          --container-image "${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.GAR_NAME }}/${{ env.GCE_INSTANCE }}:${{ github.sha }}"
+
+    # Purge old images from GCR (not latest)
+    - name: Purge GCR images
+      run: |-
+        gcloud container images list-tags "${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.GAR_NAME }}/${{ env.GCE_INSTANCE }}" \
+          --format="get(digest)" --filter="NOT tags=${{ github.sha }}" | \
+          awk -v image_path="${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.GAR_NAME }}/${{ env.GCE_INSTANCE }}@" '{print image_path $1}' | \
+          xargs -r gcloud container images delete --force-delete-tags --quiet
