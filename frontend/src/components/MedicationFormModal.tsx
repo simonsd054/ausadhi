@@ -62,6 +62,7 @@ export default function MedicationFormModal({
     values: MedicationFormValues
   ) => {
     values.timings = values.timings?.filter((timing) => timing !== "")
+    values.timings = values.timings?.slice(0, values.dailyFrequency)
 
     try {
       if (isEdit) {
