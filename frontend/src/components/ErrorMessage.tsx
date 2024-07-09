@@ -1,3 +1,7 @@
-export default function ErrorMessage({ message }: { message: any }) {
-  return <span className="text-red-700 text-sm">{message}</span>
+export default function ErrorMessage({ message }: { message: string }) {
+  return (
+    <span data-testid="error-message" className="text-red-700 text-sm">
+      {message}
+    </span>
+  )
 }

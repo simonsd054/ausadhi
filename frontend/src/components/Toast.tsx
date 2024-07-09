@@ -12,8 +12,11 @@ export default function Toast({
   return (
     showToast && (
       <ReactToast className="fixed bottom-5 right-5 bg-slate-800 text-white z-[100]">
-        <div className="ml-3 text-sm font-normal">{message}</div>
+        <div data-testid="toast-message" className="ml-3 text-sm font-normal">
+          {message}
+        </div>
         <ReactToast.Toggle
+          data-testid="cross-button"
           className="bg-slate-800 text-white"
           onDismiss={onDismiss}
         />
