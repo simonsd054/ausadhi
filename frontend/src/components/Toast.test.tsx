@@ -1,6 +1,5 @@
 import { render, screen } from "@testing-library/react"
 import { userEvent } from "@testing-library/user-event"
-import { describe, expect, it, vi } from "vitest"
 import Toast from "./Toast"
 
 describe("Toast", () => {
@@ -19,7 +18,7 @@ describe("Toast", () => {
     })
   })
 
-  describe("does not render toast message when showToast is fasle or not provided", () => {
+  describe("does not render toast message when showToast is false or not provided", () => {
     it("renders 'Another Toast Message'", () => {
       render(<Toast message="Another Toast Message" showToast={false} />)
       expect(screen.queryByTestId("toast-message")).not.toBeInTheDocument()

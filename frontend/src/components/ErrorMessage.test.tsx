@@ -1,4 +1,3 @@
-import { describe, expect, it } from "vitest"
 import { screen, render } from "@testing-library/react"
 import ErrorMessage from "./ErrorMessage"
 
@@ -10,7 +9,7 @@ describe("ErrorMessage", () => {
         "This is an error"
       )
     })
-    it("renders 'This is an error'", () => {
+    it("renders 'A different error message'", () => {
       render(<ErrorMessage message="A different error message" />)
       expect(screen.getByTestId("error-message")).toHaveTextContent(
         "A different error message"

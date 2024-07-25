@@ -64,10 +64,11 @@ export default function NavBar() {
       </Navbar.Brand>
       <Navbar.Toggle />
       <Navbar.Collapse>
-        {navbarItems.map((item) => (
+        {navbarItems.map((item, index) => (
           <Navbar.Link
             as={Link}
             to={item.linkTo}
+            data-testid={`item${index}`}
             className="cursor-pointer"
             key={item.content}
             onClick={() => {
