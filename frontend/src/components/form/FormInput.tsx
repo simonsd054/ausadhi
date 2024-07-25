@@ -60,12 +60,15 @@ export default function FormInput({
         id={id}
         variant="standard"
         label={label}
+        data-testid="form-input"
         {...register(registerName, {
           ...validation,
         })}
         {...restProps}
       />
-      {error && <ErrorMessage message={error.message} />}
+      {error && Object.keys(error).length !== 0 && (
+        <ErrorMessage message={error.message} />
+      )}
     </div>
   )
 }

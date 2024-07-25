@@ -1,7 +1,7 @@
+import { BrowserRouter } from "react-router-dom"
 import { screen, render } from "@testing-library/react"
 import NavBar from "./NavBar"
 import { GlobalContext } from "../utils/reducer"
-import { BrowserRouter } from "react-router-dom"
 
 const Wrapper = ({
   children,
