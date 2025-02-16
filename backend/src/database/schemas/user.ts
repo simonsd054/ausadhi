@@ -14,6 +14,8 @@ interface IUser {
   email: string
   emailVerifiedAt?: Date
   password: string
+  verificationCode: String | undefined
+  verificationExpire: Date |undefined
 }
 
 type THydratedUserDocument = HydratedDocument<IUser & SchemaTimestampsConfig>
@@ -30,6 +32,8 @@ const userSchema = new Schema<IUser, UserModelType>(
       type: String,
       required: true,
     },
+    verificationCode: String,
+    verificationExpire: Date,
     emailVerifiedAt: Date,
     password: {
       type: String,

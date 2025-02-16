@@ -49,10 +49,10 @@ export default function Register() {
         type: "showToast",
         data: {
           open: true,
-          message: "Registration Successful",
+          message: "Verification Code Sent. Please check your mail.",
         },
       })
-      navigate("/")
+      // navigate("/")
     } catch (err) {
       const error = err as IAxiosError
       if (error.response?.data?.name === "Custom") {
