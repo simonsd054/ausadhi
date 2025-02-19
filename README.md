@@ -1,6 +1,6 @@
 # About
 
-Ausadhi (Nepalese translation of "medicine") is a medicine mangement app.
+Ausadhi (Nepalese translation of "medicine") is a medicine management app.
 
 # Pre-requisites
 Make sure these are installed on your machine
