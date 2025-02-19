@@ -22,4 +22,16 @@ const registerUser = async (
   return (await axios.post("/auth/register", data)).data
 }
 
-export { loginUser, registerUser }
+const sendVerificationLink = async (
+  data: LoginFormValues
+): Promise<LoginRegisterResponseType> => {
+  return (await axios.post(`/auth/sendVerificationLink`, data)).data
+}
+
+const verifyEmail = async (
+  code: String | undefined
+): Promise<LoginRegisterResponseType> => {
+  return (await axios.get(`/auth/verifyEmail/${code}`)).data
+}
+
+export { loginUser, registerUser, sendVerificationLink, verifyEmail }

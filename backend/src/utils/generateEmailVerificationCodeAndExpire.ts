@@ -9,7 +9,7 @@ const generateEmailVerificationCodeAndExpire = () => {
     .digest("hex")
 
     // expire the code in 30 minutes
-    const verificationExpire = Date.now() + 30 * 60 * 1000
+    const verificationExpire = new Date(Date.now() + 30 * 60 * 1000)
 
     return {
         verificationCode,

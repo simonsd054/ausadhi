@@ -18,7 +18,7 @@ const sendEmail = async (email: string | Address | (string | Address)[] | undefi
     from: `<${process.env.EMAIL}>`,
     to: email,
     subject: subject,
-    text: message,
+    html: message,
   })
 }
 

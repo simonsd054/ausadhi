@@ -1,21 +1,30 @@
+import { useState } from "react"
 import { useNavigate } from "react-router"
 import { SubmitHandler, useForm } from "react-hook-form"
 import { useMutation } from "@tanstack/react-query"
 import { Button, Spinner } from "flowbite-react"
 
 import FormInput from "../components/form/FormInput"
-import { loginUser } from "../apis/user"
+import { loginUser, sendVerificationLink } from "../apis/user"
 import { useGlobalContext } from "../utils/reducer"
 import IAxiosError from "../types/error"
 import { LoginFormValues } from "../types/form"
 
 export default function Login() {
+  const [showVerificationButton, setShowVerificationButton] = useState(false)
+
   const { dispatch } = useGlobalContext()
 
   const userMutation = useMutation({
     mutationFn: (values: LoginFormValues) => {
       return loginUser(values)
     },
+  })
+
+  const verificationMutation = useMutation({
+    mutationFn: (values: LoginFormValues) => {
+      return sendVerificationLink(values)
+    }
   })
 
   const navigate = useNavigate()
@@ -47,6 +56,42 @@ export default function Login() {
         data: {
           open: true,
           message: "Login Successful",
+        },
+      })
+      navigate("/")
+    } catch (err) {
+      const error = err as IAxiosError
+      if (error.response?.data?.name === "Custom") {
+        if (error.response?.data?.message.includes("verification")) {
+          setShowVerificationButton(true)
+        }
+        dispatch({
+          type: "showToast",
+          data: {
+            open: true,
+            message: error.response?.data?.message,
+          },
+        })
+      } else {
+        dispatch({
+          type: "showToast",
+          data: {
+            open: true,
+            message: "Something went wrong",
+          },
+        })
+      }
+    }
+  }
+
+  const onClickVerification: SubmitHandler<LoginFormValues> = async (values) => {
+    try {
+      await verificationMutation.mutateAsync(values)
+      dispatch({
+        type: "showToast",
+        data: {
+          open: true,
+          message: "Verification Link has been sent. Check your email.",
         },
       })
       navigate("/")
@@ -102,11 +147,23 @@ export default function Login() {
           errors={errors}
           type="password"
         />
-
-        <Button disabled={isSubmitting} type="submit">
-          {isSubmitting && <Spinner className="mr-1 h-5" />}
-          Login
-        </Button>
+        <div className="flex">
+          <Button disabled={isSubmitting} type="submit">
+            {isSubmitting && <Spinner className="mr-1 h-5" />}
+            Login
+          </Button>
+          {showVerificationButton && (
+            <Button
+              disabled={isSubmitting}
+              className="ml-5"
+              color="gray"
+              onClick={handleSubmit(onClickVerification)}
+            >
+              {isSubmitting && <Spinner className="mr-1 h-5" />}
+              Send Verification Link
+            </Button>
+          )}
+        </div>
       </form>
     </div>
   )
