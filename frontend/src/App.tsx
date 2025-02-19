@@ -11,6 +11,7 @@ import {
   ProfileDetailPage,
   ProfilesPage,
   Register,
+  VerifyEmail,
 } from "./pages/"
 import { GlobalContext, globalReducer } from "./utils/reducer.js"
 import Toast from "./components/Toast.js"
@@ -57,6 +58,10 @@ const router = createBrowserRouter([
             path: "login",
             element: <Login />,
           },
+          {
+            path: "verifyEmail/:code",
+            element: <VerifyEmail />,
+          },
         ],
       },
       {
@@ -75,10 +80,6 @@ const router = createBrowserRouter([
             path: "/profiles/:id",
             element: <ProfileDetailPage />,
           },
-          // {
-          //   path: "/my-ideas",
-          //   element: <MyIdeasPage />,
-          // },
           {
             path: "/",
             element: <ProfilesPage />,
@@ -115,7 +116,6 @@ function App() {
               open: false,
               message: "",
             },
-
           })
         }} />
       </GlobalContext.Provider>

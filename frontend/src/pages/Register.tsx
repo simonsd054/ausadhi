@@ -18,8 +18,6 @@ export default function Register() {
     },
   })
 
-  const navigate = useNavigate()
-
   const {
     register,
     handleSubmit,
@@ -42,17 +40,12 @@ export default function Register() {
         data: registerResp.user,
       })
       dispatch({
-        type: "setToken",
-        data: registerResp.token,
-      })
-      dispatch({
         type: "showToast",
         data: {
           open: true,
-          message: "Registration Successful",
+          message: "Verification Code Sent. Please check your mail. It will expire in 30 minutes.",
         },
       })
-      navigate("/")
     } catch (err) {
       const error = err as IAxiosError
       if (error.response?.data?.name === "Custom") {
