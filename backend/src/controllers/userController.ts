@@ -98,6 +98,62 @@ const verifyEmail = async (req: Request, res: Response) => {
   })
 }
 
+const forgetPassword = async (req: Request, res: Response) => {
+  const user: IUser = req.body
+  const existingUser = await UserModel.findOne({ email: user.email })
+  if (!existingUser) {
+    throw new CustomError("User with that email does not exist", 401)
+  }
+  const forgetPasswordToken = jwt.sign(
+    { user_id: existingUser._id },
+    process.env.JWT_SECRET as string
+  )
+
+  const forgetPasswordURL = `${req.get(
+    "origin"
+  )}/auth/reset/${forgetPasswordToken}`
+  const message = `Please reset your password by clicking the following link: <a href="${forgetPasswordURL}" target="_blank">${forgetPasswordURL}</a>`
+
+  sendEmail(user.email, "Reset Password", message)
+  return res.json({
+    user: {
+      name: existingUser.name,
+      email: existingUser.email,
+      id: existingUser._id,
+    },
+  })
+}
+
+const resetPassword = async (req: Request, res: Response) => {
+  const decodedToken = jwt.verify(
+    req.params.token,
+    process.env.JWT_SECRET as string
+  )
+
+  if (!decodedToken) {
+    throw new CustomError("Invalid or expired token.", 400)
+  }
+
+  const user = await UserModel.findOne({ _id: (<any>decodedToken).user_id })
+  if (!user) {
+    throw new CustomError("No user found", 401)
+  }
+
+  const hashedPassword = await bcrypt.hash(req.body.password, 10)
+
+  user.password = hashedPassword
+
+  await user.save({ validateBeforeSave: false })
+
+  return res.json({
+    user: {
+      name: user.name,
+      email: user.email,
+      id: user._id,
+    },
+  })
+}
+
 const loginUser = async (req: Request, res: Response) => {
   const user: IUser = req.body
   const existingUser = await UserModel.findOne({ email: user.email })
@@ -128,4 +184,11 @@ const loginUser = async (req: Request, res: Response) => {
   })
 }
 
-export { registerUser, verifyEmail, sendVerificationLink, loginUser }
+export {
+  registerUser,
+  verifyEmail,
+  sendVerificationLink,
+  loginUser,
+  forgetPassword,
+  resetPassword,
+}
