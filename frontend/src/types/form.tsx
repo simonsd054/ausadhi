@@ -10,6 +10,14 @@ export type LoginFormValues = {
   password: string
 }
 
+export type ForgetPasswordFormValues = {
+  email: string
+}
+
+export type ResetPasswordFormValues = {
+  password: string
+}
+
 export type MedicationFormValues = {
   name: string
   composition?: string

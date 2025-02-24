@@ -7,10 +7,12 @@ import NavBar from "./components/NavBar"
 import {
   CreateProfilePage,
   EditProfilePage,
+  ForgetPassword,
   Login,
   ProfileDetailPage,
   ProfilesPage,
   Register,
+  ResetPassword,
   VerifyEmail,
 } from "./pages/"
 import { GlobalContext, globalReducer } from "./utils/reducer.js"
@@ -44,7 +46,7 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: <MainPage />,
-    // errorElement: <ErrorPage />,
+    errorElement: <ErrorPage />,
     children: [
       {
         path: "/auth",
@@ -61,6 +63,14 @@ const router = createBrowserRouter([
           {
             path: "verifyEmail/:code",
             element: <VerifyEmail />,
+          },
+          {
+            path: "forgetPassword",
+            element: <ForgetPassword />,
+          },
+          {
+            path: "reset/:token",
+            element: <ResetPassword />,
           },
         ],
       },

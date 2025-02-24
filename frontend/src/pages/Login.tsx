@@ -9,6 +9,7 @@ import { loginUser, sendVerificationLink } from "../apis/user"
 import { useGlobalContext } from "../utils/reducer"
 import IAxiosError from "../types/error"
 import { LoginFormValues } from "../types/form"
+import { Link } from "react-router-dom"
 
 export default function Login() {
   const [showVerificationButton, setShowVerificationButton] = useState(false)
@@ -24,7 +25,7 @@ export default function Login() {
   const verificationMutation = useMutation({
     mutationFn: (values: LoginFormValues) => {
       return sendVerificationLink(values)
-    }
+    },
   })
 
   const navigate = useNavigate()
@@ -84,7 +85,9 @@ export default function Login() {
     }
   }
 
-  const onClickVerification: SubmitHandler<LoginFormValues> = async (values) => {
+  const onClickVerification: SubmitHandler<LoginFormValues> = async (
+    values
+  ) => {
     try {
       await verificationMutation.mutateAsync(values)
       dispatch({
@@ -147,7 +150,7 @@ export default function Login() {
           errors={errors}
           type="password"
         />
-        <div className="flex">
+        <div className="flex mb-7">
           <Button disabled={isSubmitting} type="submit">
             {isSubmitting && <Spinner className="mr-1 h-5" />}
             Login
@@ -163,6 +166,15 @@ export default function Login() {
               Send Verification Link
             </Button>
           )}
+        </div>
+        <div>
+          Forgot Password?{" "}
+          <Link
+            className="cursor-pointer text-blue-700 hover:underline"
+            to="/auth/forgetPassword"
+          >
+            Click here.
+          </Link>
         </div>
       </form>
     </div>

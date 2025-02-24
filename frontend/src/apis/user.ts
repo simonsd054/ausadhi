@@ -1,5 +1,10 @@
 import axios from "axios"
-import { LoginFormValues, RegisterFormValues } from "../types/form"
+import {
+  ForgetPasswordFormValues,
+  LoginFormValues,
+  RegisterFormValues,
+  ResetPasswordFormValues,
+} from "../types/form"
 
 type LoginRegisterResponseType = {
   token: string
@@ -34,4 +39,24 @@ const verifyEmail = async (
   return (await axios.get(`/auth/verifyEmail/${code}`)).data
 }
 
-export { loginUser, registerUser, sendVerificationLink, verifyEmail }
+const forgetPassword = async (
+  data: ForgetPasswordFormValues
+): Promise<LoginRegisterResponseType> => {
+  return (await axios.post("/auth/forget", data)).data
+}
+
+const resetPassword = async (
+  data: ResetPasswordFormValues,
+  token: string | undefined
+): Promise<LoginRegisterResponseType> => {
+  return (await axios.post(`/auth/reset/${token}`, data)).data
+}
+
+export {
+  loginUser,
+  registerUser,
+  sendVerificationLink,
+  verifyEmail,
+  forgetPassword,
+  resetPassword,
+}
